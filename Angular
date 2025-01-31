@@ -1,0 +1,744 @@
+========================================== closure===================================================
+
+ Closures allow a function to access variables from its lexical scope (the scope in which the function was defined) even after the outer function has finished executing.
+ 
+ When a function is created, it gets access to variables that are in scope at the time of its creation. This means that even if the outer function has returned, the inner function can still reference and manipulate the outer function's variables.
+ 
+ Why Are Closures Useful?
+Encapsulation: You can create private variables that cannot be accessed directly from outside the function but can still be modified or used by inner functions.
+
+Callbacks and Event Handlers: Closures allow you to remember values in asynchronous code, like when dealing with callbacks or event listeners.
+
+Partial Application: They enable the use of functions that remember parameters that were passed when they were created, which is helpful for currying or partial application of functions.
+
+
+================================================== hoisting ====================================================
+
+
+Hoisting in JavaScript refers to the behavior where variable and function declarations are moved to the top of their containing scope (either the function or the global scope) during the compilation phase before the code is executed. This means that variables and functions can be used even before they are declared in the code, but with some important nuances.
+
+a. console.log(a); // undefined (due to hoisting)
+var a = 5;
+console.log(a); // 5
+
+
+b. console.log(a); // ReferenceError: Cannot access 'a' before initialization
+let a = 5;
+
+
+c. greet(); // Works fine, as function is hoisted
+function greet() {
+    console.log('Hello!');
+}
+
+
+d. greet(); // TypeError: greet is not a function
+var greet = function() {
+    console.log('Hello!');
+};
+
+Hoisting Summary:
+var: The variable declaration is hoisted and initialized to undefined.
+let and const: The variable declarations are hoisted, but not initialized. They are in a "temporal dead zone" until their actual declaration.
+Function Declarations: Both the function name and body are hoisted.
+Function Expressions: Only the variable declaration is hoisted, not the function definition.
+
+================================================================================ var vs let vs const ===================================================
+
+In JavaScript, `var`, `let`, and `const` are all used to declare variables, but they behave differently in terms of scoping, hoisting, and re-assignment. Let's go through the differences:
+
+ 1. **`var`**:
+
+   **Example**:
+   ```javascript
+   console.log(a); // undefined (hoisted, but not initialized)
+   var a = 5;
+   console.log(a); // 5
+
+   var a = 10; // redeclared
+   console.log(a); // 10
+   ```
+
+   **Key Points**:
+   - Function-scoped (not block-scoped).
+   - Hoisted and initialized to `undefined`.
+   - Can be redeclared and reassigned.  (note : var can be redeclared and reassigned within the same function scope without causing an error. Redeclaration will simply overwrite the previous value.)
+
+---
+ 2. **`let`**:
+
+   **Example**:
+   ```javascript
+   let b = 5;
+   console.log(b); // 5
+
+   b = 10; // reassignment works fine
+   console.log(b); // 10
+
+   // let b = 20; // Error: Cannot redeclare block-scoped variable 'b'
+   ```
+
+   **Key Points**:
+   - Block-scoped.
+   - Hoisted but not initialized (TDZ).
+   - Can be reassigned, but not redeclared in the same scope.
+
+---
+
+### 3. **`const`**:
+   - **Scope**: `const` is also block-scoped, just like `let`.
+   - **Hoisting**: Like `let`, `const` declarations are hoisted but not initialized. It also has the temporal dead zone (TDZ) behavior.
+   - **Re-assignment**: Variables declared with `const` cannot be reassigned or redeclared. Once a value is assigned to a `const` variable, it cannot be changed.
+     - **Note**: If the `const` variable holds an object or an array, you can still modify the contents (mutate the object/array), but you can't reassign the entire object or array itself.
+   
+   **Example**:
+   ```javascript
+   const c = 5;
+   console.log(c); // 5
+
+   // c = 10; // Error: Assignment to constant variable
+
+   // Working with objects:
+   const obj = { name: "Alice" };
+   obj.name = "Bob"; // Works fine (mutating the object)
+   console.log(obj.name); // Bob
+
+   // obj = {}; // Error: Assignment to constant variable
+   ```
+
+   **Key Points**:
+   - Block-scoped.
+   - Hoisted but not initialized (TDZ).
+   - Cannot be reassigned or redeclared.
+   - If it's an object or array, you can modify the contents but not reassign the reference.
+
+---
+
+### Summary Comparison:
+
+| Feature                  | `var`                               | `let`                               | `const`                             |
+|--------------------------|-------------------------------------|-------------------------------------|-------------------------------------|
+| **Scope**                | Function-scoped / Global-scoped     | Block-scoped                       | Block-scoped                       |
+| **Hoisting**             | Hoisted and initialized to `undefined` | Hoisted but not initialized (TDZ)   | Hoisted but not initialized (TDZ)   |
+| **Redeclaration**        | Can be redeclared in the same scope | Cannot be redeclared in the same scope | Cannot be redeclared in the same scope |
+| **Reassignment**         | Can be reassigned                  | Can be reassigned                  | Cannot be reassigned                |
+| **Mutability**           | Value can be changed                | Value can be changed                | Value cannot be changed (for primitive types); can mutate objects/arrays |
+| **Temporal Dead Zone**   | No TDZ (can be accessed before declaration but will be `undefined`) | Yes (cannot access before declaration) | Yes (cannot access before declaration) |
+
+==========================================================  undefined vs null ====================================================================================================
+
+undefined: Indicates that a variable is uninitialized or that a value is not assigned. It is automatically assigned by JavaScript.
+null: Represents the intentional absence of any value, typically used when you want to indicate that a variable is meant to hold an object but has no value at the moment.
+
+=========================================================== call backs =========================================================
+
+A callback is a function that is passed as an argument to another function and is executed after the completion of an operation, usually asynchronously.
+
+// Function that accepts a callback
+function fetchData(callback) {
+    setTimeout(() => {
+        let data = { message: 'Hello, world!' };
+        callback(data);  // Executing the callback once data is ready
+    }, 1000);
+}
+
+// Callback function to process the data
+function processData(data) {
+    console.log('Data received:', data);
+}
+
+fetchData(processData);  // Pass processData as a callback
+
+
+============================================== promises ======================================================================
+
+A Promise is an object representing the eventual completion (or failure) of an asynchronous operation. It is a cleaner and more powerful way to handle asynchronous operations compared to callbacks.
+
+A Promise can be in one of three states:
+
+Pending: The initial state; the operation is still ongoing.
+Fulfilled: The operation completed successfully.
+Rejected: The operation failed (an error occurred).
+
+then() is used to handle a fulfilled promise and pass the result.
+catch() is used to handle errors or rejected promises.
+
+
+// Function that returns a promise
+function fetchData() {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let data = { message: 'Hello, world!' };
+            resolve(data);  // Resolve with the data after 1 second
+        }, 1000);
+    });
+}
+
+// Consuming the promise
+fetchData()
+    .then((data) => {
+        console.log('Data received:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+    
+
+
+
+======================================================async / await ==================================================================================
+
+async: This keyword is placed in front of a function to indicate that the function will return a Promise. Inside an async function, you can use await.
+await: The await keyword can only be used inside an async function. It pauses the execution of the function until the Promise is resolved, and then returns the result of the Promise.
+
+// Async function that returns a promise
+async function fetchData() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({ message: 'Hello, world!' });
+        }, 1000);
+    });
+}
+
+// Using async/await to handle the promise
+async function getData() {
+    try {
+        let data = await fetchData();  // Wait for the promise to resolve
+        console.log('Data received:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+getData();
+
+
+=========================================================================== directives ===============================================================================
+Directives are typically not functions, but special instructions that are recognized by the JavaScript engine.
+1. "use strict" Directive:
+
+What "use strict" Does:
+Prevents the use of undeclared variables: It makes sure that all variables must be declared with var, let, or const before they are used.
+Eliminates certain JavaScript language features: Some features, like with statements, are disallowed.
+
+2.2. ECMAScript Modules (ES Modules):
+Although not typically called "directives," ECMAScript modules (ESM) (import and export) are used in JavaScript to define and manage modules. These module-related features help with code organization and scope management and can be considered directive-like in their behavior.
+
+
+=========================================================================== subjects ========================================================================
+If you're asking about "subjects" in the context of Reactive Programming and RxJS (Reactive Extensions for JavaScript), a subject is a special type of observable that can both emit values and be subscribed to.
+
+Subject in RxJS is a type of observable and a subscriber at the same time.
+It allows multicasting, meaning that it can send the same values to multiple subscribers.
+Types of Subjects in RxJS:
+Subject: A basic subject that can multicast to multiple observers.
+BehaviorSubject: A type of subject that requires an initial value and always returns the current value to new subscribers.
+ReplaySubject: A subject that "remembers" previous emissions and replays them to new subscribers.
+AsyncSubject: A subject that only emits the last value when the observable completes.
+
+============================================================================observable========================================================================================
+
+Limitations of promises:
+
+Single Event: A promise can only resolve once (either success or failure).
+No Cancellation: Once a promise is initiated, it cannot be canceled.
+Cannot Emit Multiple Values: It can only handle one value over time.
+
+
+Reactive Programming and allows for a stream of multiple values to be emitted over time.
+
+Multiple Values: Unlike promises that return a single value, observables can emit multiple values over time (e.g., user inputs, API responses, events).
+
+Lazy Execution: Observables are lazy by default, meaning they won’t start emitting values until a subscription is made.
+
+Cancelation: Observables can be canceled or unsubscribed, which is not possible with promises.
+
+
+==================================================== difference bw obseravle and subjects =================================================================================
+
+
+### Key Differences Between Observable and Subject:
+
+| **Feature**                  | **Observable**                         | **Subject**                                |
+|------------------------------|----------------------------------------|--------------------------------------------|
+| **Type**                      | A source of data (stream).             | A multicast data source (both observer and observable). |
+| **Behavior**                  | Lazy (data is produced when subscribed). | Eager (emits data immediately).            |
+| **Emission**                  | Unicast (each subscriber gets its own execution). | Multicast (subscribers share the same data stream). |
+| **Use Case**                  | Typically used for one-time events, HTTP calls, or data that doesn’t need to be shared among multiple subscribers. | Used for sharing data between multiple components, event broadcasting, and stream sharing. |
+| **Subscribers**               | A new subscriber gets a new stream of data. | All subscribers share the same stream of data. |
+| **Common Types**              | Standard Observable.                   | Subject, BehaviorSubject, ReplaySubject, AsyncSubject. |
+
+### When to Use Observable:
+- When you want to handle **asynchronous** data (e.g., HTTP requests, timers, event listeners).
+- When you don't need to share data between multiple subscribers (unicast).
+- When the data is **created dynamically** and each subscription needs to start a new execution of the Observable.
+
+### When to Use Subject:
+- When you need to **share data** between multiple subscribers (multicast).
+- When you want to **push values** into an Observable from outside, like when emitting events.
+- When dealing with **real-time** data or broadcasting to multiple listeners (e.g., WebSocket data, EventEmitter, state management).
+
+### Conclusion:
+- **Observable**: Useful for one-time or asynchronous streams where each subscription is independent and does not share emitted values.
+- **Subject**: Useful for multicasting values to multiple subscribers, allowing them to share the same stream of emitted data and providing mechanisms to emit values into the stream.
+
+Both concepts are fundamental in **Angular**'s reactive programming model, and choosing between them depends on whether you need **multicast** behavior (Subject) or **unicast** behavior (Observable).
+
+
+===================================================================================== spread operators ==========================================================
+
+The spread operator is denoted by three dots (...). It allows you to unpack values from an array or object and spread them into a new array, object, or function call.
+
+Key Points to Remember:
+Shallow Copy: The spread operator only performs a shallow copy for objects and arrays. It does not clone nested objects or arrays. For deep cloning, other methods such as JSON.parse(JSON.stringify(obj)) or using a library like Lodash can be used.
+
+Order of Elements: In arrays, the spread operator preserves the order of elements when spreading. In objects, the spread operator will overwrite properties in the order they appear.
+
+Summary:
+Arrays: The spread operator is used to copy, merge, or expand arrays.
+Objects: It allows you to copy or merge objects, as well as add new properties.
+Function Calls: The spread operator can also be used to pass elements of an array as individual arguments to a function.
+Shallow Copies: It only performs shallow copying and not deep copying of nested elements.
+
+
+==================================================================================== life cycle hooks  ================================================================
+
+
+Angular Component Lifecycle Flow:
+Here is the typical lifecycle flow of an Angular component:
+
+ngOnChanges() – Triggered when input properties change.
+ngOnInit() – Called after the component is initialized.
+ngDoCheck() – Called during every change detection cycle.
+ngAfterContentInit() – Called after content (e.g., <ng-content>) is projected into the component.
+ngAfterContentChecked() – Called after the content is checked.
+ngAfterViewInit() – Called after the component's view and child views are initialized.
+ngAfterViewChecked() – Called after the component's view and child views are checked.
+ngOnDestroy() – Called just before the component is destroyed and removed from the DOM.
+
+Summary of Use Cases:
+ngOnInit: Initialization logic for the component.
+ngOnChanges: Respond to changes in input properties.
+ngDoCheck: Custom change detection logic.
+ngAfterContentInit / ngAfterContentChecked: Work with projected content (e.g., ng-content).
+ngAfterViewInit / ngAfterViewChecked: Work with the component's own view.
+ngOnDestroy: Cleanup resources before the component is destroyed.
+
+Change Detection (ngDoCheck): Allows you to implement custom logic for checking changes in your component's data, especially when Angular's default change detection isn't sufficient.
+
+Example: Manually detecting changes in arrays or complex objects.
+ng-content (Content Projection): Allows a parent component to pass content into a child component. The content is projected into the child component's template where <ng-content> is placed.
+
+Example: Modals or other reusable UI components that accept dynamic content.
+Component’s Own View (ngAfterViewInit, ngAfterViewChecked): Focuses on the component's template, child components, or DOM elements directly within that component.
+
+Example: Interacting with DOM elements, querying child components after the view is initialized, or responding to changes in the component’s own view.
+
+============================================ DOM =======================================================================================================================
+
+Document Object Model)
+Conclusion:
+In summary, the DOM is the bridge between a web page’s static content (HTML) and dynamic behavior (JavaScript). It allows you to programmatically access and manipulate a page's structure, styles, and content in real-time, making websites interactive and dynamic.
+
+Basic DOM Methods and Properties:
+Selecting Elements:
+
+document.getElementById('id'): Selects an element by its ID.
+document.querySelector('.class'): Selects the first element that matches the provided CSS selector.
+document.querySelectorAll('.class'): Selects all elements that match the provided CSS selector.
+Modifying Elements:
+
+.innerText: Gets or sets the text content of an element.
+.innerHTML: Gets or sets the HTML content of an element.
+.style: Allows you to modify the CSS styles of an element (e.g., element.style.color = 'red').
+
+
+========================================================================= child parent =================================
+
+@Input(): Data flow from Parent to Child. The parent component passes data to the child.
+@Output(): Data flow from Child to Parent. The child component emits an event, and the parent listens to it.
+
+// Parent component (parent.component.ts)
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child [childData]="parentData"></app-child>
+  `
+})
+export class ParentComponent {
+  parentData = 'Hello from Parent';
+}
+
+
+// Child component (child.component.ts)
+@Component({
+  selector: 'app-child',
+  template: `<p>{{ childData }}</p>`
+})
+export class ChildComponent {
+  @Input() childData: string = ''; // Receiving data from parent
+}
+
+
+---------------------------
+
+// Parent component (parent.component.ts)
+@Component({
+  selector: 'app-parent',
+  template: `
+    <app-child (childEvent)="handleEvent($event)"></app-child>
+  `
+})
+export class ParentComponent {
+  handleEvent(data: string) {
+    console.log('Received from child:', data);
+  }
+}
+
+
+// Child component (child.component.ts)
+@Component({
+  selector: 'app-child',
+  template: `<button (click)="sendEvent()">Send Event</button>`
+})
+export class ChildComponent {
+  @Output() childEvent = new EventEmitter<string>(); // Output event
+
+  sendEvent() {
+    this.childEvent.emit('Hello from Child'); // Emitting data to parent
+  }
+}
+
+=========================================================================== data binding =================================================================================================
+
+
+data binding : communication bw ts of component file to view html file
+
+
+1. One-Way Binding
+One-way data binding means that data flows in one direction: from the component to the view or vice versa.
+
+
+types of One-Way Binding:
+One-way data binding (Component → View): Data flows from the component's class (the model) to the view (template).
+Interpolation ({{ }}): transefr data from (ts file) component to (html template) view , only string is allowed.
+Property Binding ([ ]): superset of interpolation ,can use non string valus too like boolean ,Binds an HTML element's property to a component's property.   [property] = "data"
+Event Binding (( )): used to handle events raised by the user by actions like click button   (property) = "data"     ,(event) = "expressions"
+
+Examples:
+-----------------------------------------------------------------
+Interpolation:
+
+Component:
+export class AppComponent {
+  title = 'Angular One-Way Binding';
+}
+Template:
+<h1>{{ title }}</h1>  <!-- Displays 'Angular One-Way Binding' -->
+-------------------------------------------------------
+Property Binding:
+
+Component:
+export class AppComponent {
+  imageUrl = 'https://example.com/image.png';
+}
+Template:
+<img [src]="imageUrl" />  <!-- Binds the 'src' property to 'imageUrl' -->
+
+-------------------------------------------------
+Event Binding:
+
+Component:
+export class AppComponent {
+  onClick() {
+    alert('Button clicked!');
+  }
+}
+Template:
+<button (click)="onClick()">Click Me</button>  <!-- Invokes onClick() when clicked -->
+
+2. two-way data binding is a mechanism that allows data to flow both ways between the component's class (model) and the view (UI). This means that changes made in the view (UI) are reflected in the component's model (class), and vice versa.
+
+Angular provides a special syntax to implement two-way data binding using the combination of property binding and event binding. This is done with the help of the [(ngModel)] directive.
+use formsmOUDLES FOR NGMODEL IN IMPORTS
+
+===================================================== package.json and angular.json===================================================================================================
+package.json:
+Dependency Management: It manages the project's dependencies and development dependencies.
+Scripts: It allows you to define custom commands to run tasks in your application (build, test, lint, etc.).
+Project Metadata: It stores basic project information, such as name, version, and description.
+Versioning and Configuration: It helps in defining the versions of packages and the Node.js engine that the project uses.
+
+
+angular.json:
+Project Configuration: Specifies how Angular applications and libraries should be built, served, and tested.
+Multiple Projects: It can manage multiple applications or libraries within the same workspace.
+Custom Build Configurations: Allows you to configure build options, file replacements, environment settings, and more.
+Angular CLI Integration: The angular.json file drives the behavior of the Angular CLI when running commands like ng serve, ng build, ng test, and ng lint.
+
+============================================================================Angular ======================================================================================================================
+Angular is a platform and framework for building single-page client applications (SPA) using HTML, CSS, and JavaScript/TypeScript. Developed and maintained by Google, Angular is widely used for creating dynamic, responsive, and feature-rich web applications.
+
+======================== pipes ===============================================================================================
+
+Pipes in Angular transform data before displaying it in the view. They can be used for formatting dates, currencies, filtering lists, etc., without modifying the underlying data.
+
+=============================================================== angular directives (SAC)===================================
+
+In Angular, **directives** are special markers attached to DOM elements (such as elements, attributes, or classes) that extend HTML with new behavior. Directives allow you to create reusable and modular components and can manipulate the DOM in various ways.
+
+DIRECTIVES ARE THE CLASSES WHICH IS USED TO ADD ADDIITONAL BEHVAIOUR TO THE ELEMENTS IN YOUR ANGULAR APPLIACTION.
+
+Angular provides three main types of directives:
+
+1. **Component Directives** :  WITH ITS OWN TEMPLATES
+   - **Definition**: A **Component** is a directive with its own template and logic. Every Angular application must have at least one component, which is usually the root component.
+   - **Example**: `@Component` decorator is used to define component directives.
+   - **Purpose**: A component defines a view (HTML template) and the logic behind that view (TypeScript class).
+   - **Usage**: You define the template, styles, and logic that should be rendered and executed for that specific component.
+
+
+   @Component({
+     selector: 'app-my-component',
+     template: '<h1>Hello, World!</h1>',
+     styles: ['h1 { color: red; }']
+   })
+   export class MyComponent { }
+  
+   This creates a component directive that will render an `<h1>` with the text "Hello, World!" in red.
+
+
+ 2. **Structural Directives**
+   - **Definition**: **Structural directives** modify the structure of the DOM by adding or removing elements based on some condition. These directives usually change the layout of the DOM tree.
+   - **Examples**:
+     - `*ngIf`
+     - `*ngFor`
+     - `*ngSwitch`
+   
+   **Key Characteristics**:
+   - Structural directives have an asterisk (`*`) before the directive name, indicating they modify the structure of the DOM.
+   - They work by manipulating the DOM elements at runtime.
+
+
+3.Attribute Directives
+   - Definition: **Attribute directives** modify the appearance or behavior of an existing DOM element. They don’t change the structure of the DOM, unlike structural directives, but rather affect the style, class, or other DOM properties of the element.
+   - **Examples**:
+     - `ngClass`
+     - `ngStyle`
+     - `ngModel`
+     - Custom attribute directives (like `appHighlight`)
+
+   **Key Characteristics**:
+   - Attribute directives are attached to elements as attributes, and they can alter the behavior or appearance of the element.
+   
+============================================================================= Node Package Manager (npm ) and node modules ===========================================================================
+
+npm - open source repo, where u get 1000s of lib used in angular application.
+
+Why node_modules is Important:
+Centralized Dependency Management: node_modules ensures that all your project's required dependencies are available and correctly versioned.
+Project Reproducibility: When you share your project with others, running npm install ensures they get the same dependencies and can run the project without issues.
+Isolation of Dependencies: node_modules makes sure that each project can have its own set of dependencies, independent of other projects you may have on your machine.
+
+Key Points about node_modules:
+
+Where Dependencies Are Stored: It contains all the libraries or packages that are installed for the project, including their dependencies.
+Automatic Creation: The node_modules folder is automatically created when you run npm install. It is not manually added to the project.
+Should Not Be Committed: Typically, the node_modules folder is not committed to version control (like Git). Instead, the package.json (and package-lock.json or yarn.lock) is shared, which allows others to install the same dependencies using npm install.
+
+
+=========================@component :  selector amd templateUrl and styleUrl -=======================================================================
+
+selector : is used to idetify each component uniquely into the compoonent tree.
+
+template : html view of an angular component
+
+style : 
+
+
+====================================================  module =============================================================================
+groups serices , components , directives and pipes together which are related to the application ,
+
+app.module.ts : @nGMODULE :
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    UserComponent  // Declare your feature components here
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,  // Import HttpClientModule for making HTTP requests
+    UserModule         // Import feature modules as needed
+  ],
+  providers: [UserService],  // Declare services here
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+============================================================================== how angular app gets donwladed and starts ========================================
+
+index.html -> main.ts -> app.module.ts -> app-component
+
+main.ts - > emtry point of web based application and bootstraps the app module to run in the broweser
+
+app module bootstraps the app component file ( html view what we will see)
+
+
+========================================= TS VS JS ================================================================================================================
+
+browsers only understand JavaScript, not TypeScript, so TypeScript code must be converted (or compiled) into JavaScript before it can run in the browser.
+
+
+=============================================================================== INDEX and root =======================================================================
+
+index.html: It is the main HTML file that serves as the entry point for the Angular app. It includes essential meta tags, external files (CSS, JavaScript), and has a placeholder tag (usually <app-root></app-root>) where the root component is rendered.
+Root Component: It is the main starting component in Angular that is bootstrapped first. It is typically referenced in the index.html and serves as the main container for the rest of the application’s components. It is specified in the bootstrap array in app.module.ts.
+
+============================================================== cli ==============================
+
+ng generate component my-component
+ng generate service my-service
+
+ng new my-angular-app
+
+ng serve
+
+ng build
+
+ng add @angular/material
+
+
+=========================== decorator ========================
+ store metadata about a class ,method or property.
+ data that provides info about others data 
+ 
+ types :
+1. class decorator : @ngmodule , @pipe , @component
+2. property decorator : @input @ouput
+3. method decorator : @hostlistener
+4. parameter decorator : @self @inject
+
+======================================== @ng module ==========================
+
+@NgModule is a decorator that is used to define an Angular module. An Angular module is a container for different parts of an Angular application, such as components, services, pipes, and other modules. It is a fundamental concept in Angular and helps to organize an application into cohesive blocks of functionality.
+
+
+================================================== box area (padding vs margin) =======================================================
+
++--------------------------+
+|         Margin            |  ← Outer space around the element
+|   +--------------------+  |
+|   |     Border          |  ← Box's boundary
+|   |  +-------------+     |
+|   |  |  Padding    |     |  ← Space between content and border
+|   |  |  +-------+  |     |
+|   |  |  |Content|  |     |  ← Actual element content (text, image)
+|   |  |  +-------+  |     |
+|   |  +-------------+     |
+|   +--------------------+  |
++--------------------------+
+
+
+Imagine a square or rectangle:
+
+Content: This is the actual text, images, or elements inside a box.
+Padding: This space surrounds the content, pushing it away from the border. It's inside the box.
+Border: The line that wraps around the padding and content (optional).
+Margin: The space outside the border, separating the box from other elements.
+
+The content is in the center.
+Padding surrounds the content inside the border.
+Border is the outer edge of the element.
+Margin is the space around the border, separating the element from other elements.
+
+
+The margin creates space between this box and other surrounding boxes, while padding ensures the content has space within its box.
+Padding is inside the element, pushing the content away from the borders.
+Margin is outside the element, creating space between the element and other surrounding elements.
+
+================================================================================ element in the middle ======================================================================
+
+.container {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  height: 100vh; /* Optional: Make the container take the full viewport height */
+}
+
+==================================================== position absoulte ========================================================================================================
+
+position: absolute; allows you to position an element relative to its nearest positioned ancestor or the viewport if no ancestor is found.
+It removes the element from the document flow, meaning other elements won't be affected by its size or position.
+You can use top, right, bottom, and left to fine-tune the element's position within its positioning context.
+
+
+
+
+=================================== ngstyle vs ngclass ==================================================================================================================================
+
+Use ngStyle for dynamically setting individual styles inline (e.g., changing background-color, font-size, etc.).
+Use ngClass for adding/removing CSS classes based on conditions (e.g., toggling between states, applying predefined class-based styles).
+
+
+=======================================  services ====================================================================
+
+service clasx : is a ts class an resusbale class which can be used in multiple components 
+service can be implemented with the help of dependency injection
+
+
+use maadbek agiro compoennt olagge hogi provides ali error module name kodu
+constor(private loginservice: Loginservice)
+
+
+hierachrchal depency injection :
+1. each componet ali providers oalgge ,
+2. app componetent : providers olagge
+3. ha service olagge @injectable { provided :'root' } -> throughout all components
+
+@injectable : one service can be used in another service
+
+
+
+=============================================================
+
+position: absolute: The element is positioned relative to its nearest positioned (non-static) ancestor. If no ancestor is positioned, it is placed relative to the initial containing block (usually the viewport).
+position: relative: The element is positioned relative to its normal position. Using top, right, bottom, or left moves the element relative to where it would normally be.
+position: fixed: The element is positioned relative to the viewport and remains fixed in place when the page is scrolled.
+position: sticky: The element behaves like a relative element until the scroll reaches a defined point, then it becomes fixed until it is scrolled out of view.
+
+
+
+=========================================================================================
+
+display: none: The element is removed from the document flow entirely, meaning it will not occupy any space on the page.
+visibility: hidden: The element is hidden, but it still occupies space in the layout, meaning it affects the positioning of other elements.
+
+================================================================
+
+Media queries in CSS are used to apply different styles for different devices or screen sizes. They allow you to make your website responsive to various device widths, orientations, and resolutions.
+
+Example:
+
+css
+Copy
+/* Apply styles for screens with a width of 600px or less */
+@media screen and (max-width: 600px) {
+  body {
+    background-color: lightblue;
+  }
+}
+
+====================================================
+
+Flexbox (Flexible Box Layout) is a one-dimensional layout model that allows you to easily align and distribute space among items in a container, even when their size is unknown or dynamic
+
+
+
+
+
+
+
+
+
+
